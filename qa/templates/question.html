@@ -9,7 +9,7 @@
 <p><b> Answers:</b> </p>
 {%  for ans in answers %}
 	{{ ans.author }}: {{ ans.text }}
-	{{ ans.added_ad }}
+	({{ ans.added_ad }})
     <br />
 {% endfor %}
 <br />
