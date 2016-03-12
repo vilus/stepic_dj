@@ -16,15 +16,18 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from qa.views import head, popular, question, test, ask, answer
+from qa.views import login, signup
+from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', head),
-    url(r'^login/', test),
-    url(r'^signup/', test),
+    url(r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
+    url(r'^signup/', signup),
     url(r'^question/(\d+)/', question),
     url(r'^ask/', ask),
     url(r'^popular/', popular),
     url(r'^answer/', answer),
+    url(r'^.*$', RedirectView.as_view(url='/', permanent=False), name=''),
 ]

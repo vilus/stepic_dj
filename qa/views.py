@@ -4,10 +4,11 @@ from django.views.decorators.http import require_GET
 from django.shortcuts import get_object_or_404, render_to_response, redirect, render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.template import RequestContext
+from django.contrib.auth import authenticate, login
 #from django.views.generic.edit import FormView
 
 from .models import Question, Answer
-from .forms import AskForm, AnswerForm
+from .forms import AskForm, AnswerForm, LoginForm, SignupForm
 
  
 def test(request, *args, **kwargs):
@@ -57,9 +58,8 @@ def question(request, qu_id):
 
 def ask(request):
     if request.method == 'POST':
-        # TODO: pass user via request
         form = AskForm(request.POST)
-        form._user = 1 #request.user
+        form._user = request.user.id
         if form.is_valid():
             qu = form.save()
             return redirect(qu.get_absolute_url(), qu.pk)
@@ -70,12 +70,26 @@ def ask(request):
 
 def answer(request):
     if request.method == 'POST':
-        # TODO: pass user via request
         form = AnswerForm(request.POST)
-        form._user = 2 #request.user
+        form._user = request.user.id
         if form.is_valid():
             ask = form.save()
             return redirect(ask.question.get_absolute_url(), ask.question.id)
     else:
         form = AnswerForm()
     return render(request, 'answer.html', {'form': form})
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            us = authenticate(username=request.POST['username'], password=request.POST['password'])
+            login(request, us)
+            return redirect('/')
+    else:
+        form = SignupForm()
+    return render(request, 'signup.html', {'form': form})
+
+
